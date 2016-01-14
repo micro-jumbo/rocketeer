@@ -70,9 +70,11 @@ trait Flow
     protected function syncSharedFolders()
     {
         $shared = (array) $this->rocketeer->getOption('remote.shared');
-        $copy = 'true' === ($this->rocketeer->getOption('remote.copy-shared'));
         foreach ($shared as &$file) {
-            $this->share($file, $copy);
+            if (is_array($file))
+                $this->share($file[0], $file[1])
+            else
+                $this->share($file, false);
         }
 
         return true;
@@ -106,7 +108,7 @@ trait Flow
      *
      * @return string
      */
-    public function share($file, $copy)
+    public function share($file, $copy = false)
     {
         // Get path to current file and shared file
         $currentFile = $this->releasesManager->getCurrentReleasePath($file);
